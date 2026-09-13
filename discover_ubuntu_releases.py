@@ -36,7 +36,10 @@ def load_existing_releases(filepath):
             if line and not line.startswith("#"):
                 parts = line.split()
                 if len(parts) >= 2:
-                    existing[parts[0]] = parts[1]
+                    tag = parts[0]
+                    if tag.count('.') == 1:
+                        tag = f"{tag}.0"
+                    existing[tag] = parts[1]
     return existing
 
 def scan_track_isos(track_ver, codename, urls):
@@ -54,6 +57,8 @@ def scan_track_isos(track_ver, codename, urls):
                 for match in pattern.finditer(html):
                     iso_name = match.group(1)
                     tag = match.group(2)
+                    if tag.count('.') == 1:
+                        tag = f"{tag}.0"
                     full_url = f"{base_url.rstrip('/')}/{iso_name}"
                     if tag not in discovered:
                         discovered[tag] = full_url

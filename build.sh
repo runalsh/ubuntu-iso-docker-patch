@@ -88,6 +88,14 @@ while [ $# -gt 0 ]; do
       RELEASES_FILE="${1#*=}"
       shift
       ;;
+    -t|--extra-tag)
+      EXTRA_TAG="$2"
+      shift 2
+      ;;
+    --extra-tag=*)
+      EXTRA_TAG="${1#*=}"
+      shift
+      ;;
     -n|--no-check-exists)
       SKIP_EXISTS_CHECK="true"
       shift
@@ -201,6 +209,11 @@ SUCCESS_TAGS=()
 for target in "${TARGETS[@]}"; do
   tag="${target%%|*}"
   source="${target##*|}"
+
+  # Normalize tag without patch version (e.g. 24.04 -> 24.04.0)
+  if [[ "$tag" =~ ^[0-9]+\.[0-9]+$ ]]; then
+    tag="${tag}.0"
+  fi
 
   log_step "Processing release: tag='${tag}', source='${source}'"
 
@@ -456,30 +469,12 @@ EOF_APTLIST
     INTERNAL_VERSION="$tag"
   fi
 
-  if [[ "$INTERNAL_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-    PATCH_VER="$INTERNAL_VERSION"
-    MINOR_VER=$(echo "$INTERNAL_VERSION" | cut -d. -f1,2)
-    MAJOR_VER="$MINOR_VER"
-  elif [[ "$INTERNAL_VERSION" =~ ^[0-9]+\.[0-9]+ ]]; then
-    PATCH_VER="$INTERNAL_VERSION"
-    MINOR_VER="$INTERNAL_VERSION"
-    MAJOR_VER="$INTERNAL_VERSION"
-  else
-    PATCH_VER="$tag"
-    MINOR_VER="$tag"
-    MAJOR_VER="$tag"
-  fi
-
-  log_info "Extracted release versions:"
-  log_info "  -> Full Tag:  $tag"
-  log_info "  -> Patch Ver: $PATCH_VER"
-  log_info "  -> Minor Ver: $MINOR_VER"
-  log_info "  -> Major Ver: $MAJOR_VER"
+  log_info "Release tag: $tag (internal OS VERSION_ID: $INTERNAL_VERSION)"
 
   declare -a ALL_EXTRA_TAGS=()
-  [ -n "$PATCH_VER" ] && [ "$PATCH_VER" != "$tag" ] && ALL_EXTRA_TAGS+=("$PATCH_VER")
-  [ -n "$MINOR_VER" ] && [ "$MINOR_VER" != "$tag" ] && [ "$MINOR_VER" != "$PATCH_VER" ] && ALL_EXTRA_TAGS+=("$MINOR_VER")
-  [ -n "$MAJOR_VER" ] && [ "$MAJOR_VER" != "$tag" ] && [ "$MAJOR_VER" != "$PATCH_VER" ] && [ "$MAJOR_VER" != "$MINOR_VER" ] && ALL_EXTRA_TAGS+=("$MAJOR_VER")
+  if [ -n "${EXTRA_TAG:-}" ] && [ "${EXTRA_TAG}" != "$tag" ]; then
+    ALL_EXTRA_TAGS+=("${EXTRA_TAG}")
+  fi
 
   docker tag "${FULL_IMAGE_TAG}" "${FULL_GHCR_TAG}"
 
