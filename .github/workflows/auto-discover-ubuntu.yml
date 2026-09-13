@@ -1,0 +1,50 @@
+name: Auto Discover Ubuntu ISO Releases
+
+on:
+  schedule:
+    # Run once every 7 days (every Sunday at 03:00 UTC)
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Scan official Ubuntu mirrors for new ISO releases
+        id: scan
+        run: |
+          OUTPUT=$(python3 discover_ubuntu_releases.py --populate-releases releases.txt)
+          echo "$OUTPUT"
+          if git diff --quiet releases.txt; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request if new releases discovered
+        if: steps.scan.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: auto-discovered new Ubuntu ISO releases"
+          title: "🚀 New Ubuntu ISO Releases Discovered"
+          body: |
+            Automated release discovery detected updates to Ubuntu ISO releases on official mirrors.
+            
+            `releases.txt` has been updated with new ISO release URLs.
+            
+            Please review and merge this PR to trigger automated container builds.
+          branch: "auto-discover-ubuntu-releases"
+          reviewers: "${{ github.repository_owner }}"
