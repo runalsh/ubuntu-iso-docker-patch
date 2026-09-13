@@ -1,0 +1,6 @@
+*.iso
+*.squashfs
+/tmp/
+*.log
+.DS_Store
+*.swp

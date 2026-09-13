@@ -1,0 +1,3 @@
+# Ubuntu ISO Releases
+# Format: <tag> <iso_download_url_or_filename>
+24.04.5 https://releases.ubuntu.com/noble/ubuntu-24.04.5-live-server-amd64.iso
