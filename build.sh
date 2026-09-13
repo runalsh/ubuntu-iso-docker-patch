@@ -292,11 +292,18 @@ for target in "${TARGETS[@]}"; do
     local squash_file="$1"
     local target_dir="$2"
     log_info "Extracting squashfs layer: $(basename "$squash_file")"
-    if command -v unsquashfs &>/dev/null; then
+    if [ -z "$(ls -A "$target_dir" 2>/dev/null)" ] && command -v unsquashfs &>/dev/null; then
       s unsquashfs -f -d "$target_dir" "$squash_file"
+    elif command -v unsquashfs &>/dev/null; then
+      local layer_tmp
+      layer_tmp=$(mktemp -d /tmp/squashfs_layer.XXXXXX)
+      s unsquashfs -d "$layer_tmp" "$squash_file"
+      s cp -a "$layer_tmp/." "$target_dir/"
+      s rm -rf "$layer_tmp"
     else
+      s mkdir -p "$SQUASH_MNT"
       s mount -t squashfs -o loop,ro "$squash_file" "$SQUASH_MNT"
-      (cd "$SQUASH_MNT" && s tar -cf - .) | (cd "$target_dir" && s tar -xf -)
+      s cp -a "$SQUASH_MNT/." "$target_dir/"
       s umount "$SQUASH_MNT"
     fi
   }
