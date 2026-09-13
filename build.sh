@@ -402,13 +402,13 @@ EOF_APTLIST
     log_info "Updating package lists inside rootfs..."
     s chroot "$ROOTFS_DIR" env DEBIAN_FRONTEND=noninteractive LC_ALL=C apt-get update -qq || true
 
-    log_exec "apt-get install -y --no-install-recommends ${SERVER_PKGS[*]}"
+    log_exec "apt-get install -y ${SERVER_PKGS[*]}"
     s chroot "$ROOTFS_DIR" env DEBIAN_FRONTEND=noninteractive LC_ALL=C \
-      apt-get install -y -qq --no-install-recommends "${SERVER_PKGS[@]}" 2>/dev/null || {
+      apt-get install -y -qq "${SERVER_PKGS[@]}" 2>/dev/null || {
         log_warn "Some packages failed on batch install, installing individually..."
         for p in "${SERVER_PKGS[@]}"; do
           s chroot "$ROOTFS_DIR" env DEBIAN_FRONTEND=noninteractive LC_ALL=C \
-            apt-get install -y -qq --no-install-recommends "$p" 2>/dev/null || true
+            apt-get install -y -qq "$p" 2>/dev/null || true
         done
       }
 
