@@ -298,12 +298,12 @@ for target in "${TARGETS[@]}"; do
       local layer_tmp
       layer_tmp=$(mktemp -d /tmp/squashfs_layer.XXXXXX)
       s unsquashfs -d "$layer_tmp" "$squash_file"
-      s cp -a "$layer_tmp/." "$target_dir/"
+      s rsync -aH --force "$layer_tmp/" "$target_dir/"
       s rm -rf "$layer_tmp"
     else
       s mkdir -p "$SQUASH_MNT"
       s mount -t squashfs -o loop,ro "$squash_file" "$SQUASH_MNT"
-      s cp -a "$SQUASH_MNT/." "$target_dir/"
+      s rsync -aH --force "$SQUASH_MNT/" "$target_dir/"
       s umount "$SQUASH_MNT"
     fi
   }
