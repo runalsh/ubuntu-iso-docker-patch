@@ -75,7 +75,9 @@ jobs:
           fi
 
       - name: Log in to Docker Hub
+        id: dockerhub_login
         if: github.event_name != 'pull_request' && env.DOCKERHUB_TOKEN != ''
+        continue-on-error: true
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -96,7 +98,7 @@ jobs:
 
       - name: Build, verify and push images
         env:
-          PUSH_TO_DOCKERHUB: ${{ secrets.DOCKERHUB_TOKEN != '' }}
+          PUSH_TO_DOCKERHUB: ${{ steps.dockerhub_login.outcome == 'success' }}
           PUSH_TO_GHCR: 'true'
           CLEANUP_DOCKER_IMAGES: 'true'
           SKIP_EXISTS_CHECK: ${{ github.event.inputs.force_rebuild || 'false' }}

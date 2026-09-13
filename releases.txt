@@ -1,3 +1,22 @@
-# Ubuntu ISO Releases
-# Format: <tag> <iso_download_url_or_filename>
+# Ubuntu ISO Releases (26.04 LTS Resolute, 24.04 LTS Noble, 22.04 LTS Jammy)
+# Format: <tag> <iso_download_url>
+
+# Ubuntu 26.04 LTS (Resolute)
+26.04.1 https://releases.ubuntu.com/resolute/ubuntu-26.04.1-live-server-amd64.iso
+26.04 https://releases.ubuntu.com/resolute/ubuntu-26.04-live-server-amd64.iso
+
+# Ubuntu 24.04 LTS (Noble)
 24.04.5 https://releases.ubuntu.com/noble/ubuntu-24.04.5-live-server-amd64.iso
+24.04.4 https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso
+24.04.3 https://releases.ubuntu.com/noble/ubuntu-24.04.3-live-server-amd64.iso
+24.04.2 https://old-releases.ubuntu.com/releases/noble/ubuntu-24.04.2-live-server-amd64.iso
+24.04.1 https://old-releases.ubuntu.com/releases/noble/ubuntu-24.04.1-live-server-amd64.iso
+24.04 https://old-releases.ubuntu.com/releases/noble/ubuntu-24.04-live-server-amd64.iso
+
+# Ubuntu 22.04 LTS (Jammy)
+22.04.5 https://releases.ubuntu.com/jammy/ubuntu-22.04.5-live-server-amd64.iso
+22.04.4 https://old-releases.ubuntu.com/releases/jammy/ubuntu-22.04.4-live-server-amd64.iso
+22.04.3 https://old-releases.ubuntu.com/releases/jammy/ubuntu-22.04.3-live-server-amd64.iso
+22.04.2 https://old-releases.ubuntu.com/releases/jammy/ubuntu-22.04.2-live-server-amd64.iso
+22.04.1 https://old-releases.ubuntu.com/releases/jammy/ubuntu-22.04.1-live-server-amd64.iso
+22.04 https://old-releases.ubuntu.com/releases/jammy/ubuntu-22.04-live-server-amd64.iso
